@@ -1,0 +1,36 @@
+# Environment and Configuration Files
+config/environment.php
+config/.env
+.env
+*.env
+
+# Database Files
+*.sql
+database_update.sql
+
+# Log Files
+*.log
+logs/
+
+# Temporary Files
+*.tmp
+*.temp
+update_database.php
+fix_database.php
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Cache Files
+cache/
+tmp/
+
+# Uploads (if you want to ignore user uploads)
+# uploads/

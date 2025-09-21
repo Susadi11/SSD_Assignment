@@ -1,8 +1,7 @@
 <?php
 // Google OAuth Configuration (Updated for 2024 - Google Identity Services)
-define('GOOGLE_CLIENT_ID', '1046815570922-tn4d2erbdneoebmfvgml5k4jof4n24ag.apps.googleusercontent.com');
-define('GOOGLE_CLIENT_SECRET', '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');
-define('GOOGLE_REDIRECT_URI', 'http://localhost/ssd%20assignment%20fixed/SSD_Assignment/shop/callback.php');
+// Load environment variables
+include_once 'environment.php';
 define('GOOGLE_AUTH_URL', 'https://accounts.google.com/o/oauth2/v2/auth');
 define('GOOGLE_TOKEN_URL', 'https://oauth2.googleapis.com/token');
 define('GOOGLE_USER_INFO_URL', 'https://www.googleapis.com/oauth2/v2/userinfo');
