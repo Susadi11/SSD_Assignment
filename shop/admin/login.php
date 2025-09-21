@@ -1,5 +1,12 @@
 <?php include '../classess/Adminlogin.php';?>
+
 <?php
+// Security headers to prevent clickjacking attacks
+header("X-Frame-Options: DENY");
+header("Content-Security-Policy: frame-ancestors 'none'");
+header("X-Content-Type-Options: nosniff");
+header("Referrer-Policy: strict-origin-when-cross-origin");
+
 $al = new Adminlogin();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$adminUser = $_POST['adminUser'];
