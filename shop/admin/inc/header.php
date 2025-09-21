@@ -26,6 +26,12 @@ $fm = new Format();
   header("Pragma: no-cache"); 
   header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); 
   header("Cache-Control: max-age=2592000");
+  
+  // Security headers to prevent clickjacking attacks
+  header("X-Frame-Options: DENY");
+  header("Content-Security-Policy: frame-ancestors 'none'");
+  header("X-Content-Type-Options: nosniff");
+  header("Referrer-Policy: strict-origin-when-cross-origin");
 ?>
 <!DOCTYPE html>
 <html>

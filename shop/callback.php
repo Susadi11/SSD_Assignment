@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Security headers to prevent clickjacking attacks
+header("X-Frame-Options: DENY");
+header("Content-Security-Policy: frame-ancestors 'none'");
+header("X-Content-Type-Options: nosniff");
+header("Referrer-Policy: strict-origin-when-cross-origin");
+
 include_once 'config/config.php';
 include_once 'config/google_oauth.php';
 include_once 'lib/Session.php';
