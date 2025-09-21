@@ -1,4 +1,5 @@
 <?php include 'inc/header.php';?>
+<?php include 'config/google_oauth.php';?>
 <?php 
 $login = Session::get("cuslogin");
 if ($login == true) {
@@ -26,12 +27,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
     		 ?>
         	<h3>Existing Customers</h3>
         	<p>Sign in with the form below.</p>
+        	
         	<form action="" method="post">
                 	<input name="email" placeholder="Email" type="text"/>
                     <input name="pass" placeholder="Password" type="password"/>
                     <div class="buttons"><div><button class="grey" name="login">Sign In</button></div></div>
+        	</form>
+        	
+        	<!-- Google Sign-In Button - positioned under the regular sign in -->
+        	<div class="google-signin-container" style="margin-top: 15px;">
+        		<a href="<?php echo getGoogleAuthUrl(); ?>" class="google-signin-btn">
+        			<img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
+        			Sign in with Google
+        		</a>
+        	</div>
                       </div>
-                 </form>
                  
                     
                   

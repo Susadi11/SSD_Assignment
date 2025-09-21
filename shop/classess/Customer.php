@@ -130,6 +130,64 @@ if ($name == "" || $address == "" || $city == "" || $country == "" || $zip == ""
   }
 }
 
+// Google OAuth Methods
+public function getCustomerByEmail($email){
+	$email = mysqli_real_escape_string($this->db->link, $email);
+	$query = "SELECT * FROM tbl_customer WHERE email = '$email' LIMIT 1";
+	$result = $this->db->select($query);
+	if ($result != false) {
+		return $result->fetch_assoc();
+	}
+	return false;
+}
+
+public function createGoogleCustomer($data){
+	$name = mysqli_real_escape_string($this->db->link, $data['name']);
+	$email = mysqli_real_escape_string($this->db->link, $data['email']);
+	$google_id = mysqli_real_escape_string($this->db->link, $data['google_id']);
+	$profile_picture = mysqli_real_escape_string($this->db->link, $data['profile_picture']);
+	$oauth_provider = mysqli_real_escape_string($this->db->link, $data['oauth_provider']);
+	
+	// Set default values for required fields
+	$address = "Not provided";
+	$city = "Not provided";
+	$country = "Not provided";
+	$zip = "00000";
+	$phone = "Not provided";
+	$pass = md5(uniqid()); // Generate random password for Google users
+	
+	$query = "INSERT INTO tbl_customer(name,address,city,country,zip,phone,email,pass,google_id,oauth_provider,profile_picture) 
+			  VALUES('$name','$address','$city','$country','$zip','$phone','$email','$pass','$google_id','$oauth_provider','$profile_picture')";
+	
+	$inserted_row = $this->db->insert($query);
+	return $inserted_row;
+}
+
+public function updateCustomerGoogleId($customer_id, $google_id, $profile_picture = ''){
+	$customer_id = mysqli_real_escape_string($this->db->link, $customer_id);
+	$google_id = mysqli_real_escape_string($this->db->link, $google_id);
+	$profile_picture = mysqli_real_escape_string($this->db->link, $profile_picture);
+	
+	$query = "UPDATE tbl_customer 
+			  SET google_id = '$google_id', 
+			      oauth_provider = 'google',
+			      profile_picture = '$profile_picture'
+			  WHERE id = '$customer_id'";
+	
+	$updated_row = $this->db->update($query);
+	return $updated_row;
+}
+
+public function getCustomerByGoogleId($google_id){
+	$google_id = mysqli_real_escape_string($this->db->link, $google_id);
+	$query = "SELECT * FROM tbl_customer WHERE google_id = '$google_id' LIMIT 1";
+	$result = $this->db->select($query);
+	if ($result != false) {
+		return $result->fetch_assoc();
+	}
+	return false;
+}
+
 }
 
 

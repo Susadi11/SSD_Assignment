@@ -1,0 +1,63 @@
+/* Google Sign-In Button Styles */
+.google-signin-btn {
+    display: inline-block;
+    background: #4285f4;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 3px;
+    font-weight: normal;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.google-signin-btn:hover {
+    background: #3367d6;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.google-signin-btn img {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.google-signin-container {
+    text-align: center;
+    margin-top: 15px;
+    padding: 0 10px;
+}
+
+/* Make it look more integrated with the existing form */
+.google-signin-container .google-signin-btn {
+    background: #f8f8f8;
+    color: #333;
+    border: 1px solid #ddd;
+    font-size: 12px;
+    padding: 8px 16px;
+}
+
+.google-signin-container .google-signin-btn:hover {
+    background: #e8e8e8;
+    border-color: #ccc;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .google-signin-btn {
+        padding: 10px 16px;
+        font-size: 12px;
+    }
+}
