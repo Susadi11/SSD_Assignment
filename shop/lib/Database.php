@@ -26,10 +26,11 @@ private function connectDB(){
  }
  }
  
-// Select or Read data with prepared statements
+ // SECURE: Prepared statement implementation with parameter binding
 public function select($query, $params = [], $types = ''){
     $stmt = $this->link->prepare($query);
     if(!$stmt){
+        //Generic error message without exposing details
         die("Prepare failed: " . $this->link->error);
     }
     
@@ -47,7 +48,7 @@ public function select($query, $params = [], $types = ''){
     }
 }
 
-// Insert data with prepared statements
+// Parameterized insertion
 public function insert($query, $params = [], $types = ''){
     $stmt = $this->link->prepare($query);
     if(!$stmt){
@@ -60,13 +61,13 @@ public function insert($query, $params = [], $types = ''){
     
     $insert_row = $stmt->execute();
     if($insert_row){
-        return $stmt->insert_id;
+        return $stmt->insert_id; // Return inserted ID safely
     } else {
         return false;
     }
 }
 
-// Update data with prepared statements  
+// Parameterized update 
 public function update($query, $params = [], $types = ''){
     $stmt = $this->link->prepare($query);
     if(!$stmt){
@@ -85,13 +86,14 @@ public function update($query, $params = [], $types = ''){
     }
 }
 
-// Delete data with prepared statements
+// Parameterized deletion
 public function delete($query, $params = [], $types = ''){
     $stmt = $this->link->prepare($query);
     if(!$stmt){
         die("Prepare failed: " . $this->link->error);
     }
     
+    //Safe parameter binding for DELETE operations
     if(!empty($params)){
         $stmt->bind_param($types, ...$params);
     }

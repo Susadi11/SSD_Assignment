@@ -17,9 +17,10 @@ private $fm;
 		$this->db = new Database();
 		$this->fm = new Format();
 	}
-
+	 
+    // SECURE: Parameterized query with input validation
 	public function productInsert($data,$file){
-		// Input validation
+		// SECURE: Enhanced input sanitization
 		$productName = $this->fm->sanitizeString($data['productName']);
 		$catId = $this->fm->sanitizeNumber($data['catId']);
 		$brandId = $this->fm->sanitizeNumber($data['brandId']);
@@ -27,6 +28,7 @@ private $fm;
 		$price = $this->fm->sanitizeString($data['price']);
 		$type = $this->fm->sanitizeString($data['type']);
 
+		// SECURE: Additional escaping for legacy compatibility
 		$productName = $this->fm->escapeString($productName, $this->db->link);
 		$catId = $this->fm->escapeString($catId, $this->db->link);
 		$brandId = $this->fm->escapeString($brandId, $this->db->link);
@@ -54,10 +56,10 @@ private $fm;
 		} else {
 			move_uploaded_file($file_temp, $uploaded_image);
 			
-			// Use prepared statement
+		// SECURE: Prepared statement with parameter binding
 			$query = "INSERT INTO tbl_product(productName,catId,brandId,body,price,image,type) VALUES(?,?,?,?,?,?,?)";
 			$params = [$productName, $catId, $brandId, $body, $price, $uploaded_image, $type];
-			$types = "siisdss";
+			$types = "siisdss"; // SECURE: Type specification
 			
 			$inserted_row = $this->db->insert($query, $params, $types);
 			if ($inserted_row) {
@@ -99,7 +101,7 @@ private $fm;
 			$msg = "<span class='error'>Invalid product ID!</span>";
 			return $msg;
 		}
-
+ 		// SECURE: Sanitize all inputs
 		$productName = $this->fm->sanitizeString($data['productName']);
 		$catId = $this->fm->sanitizeNumber($data['catId']);
 		$brandId = $this->fm->sanitizeNumber($data['brandId']);
@@ -136,7 +138,7 @@ private $fm;
 				} else {
 					move_uploaded_file($file_temp, $uploaded_image);
 					
-					// Use prepared statement
+					// SECURE: Prepared statement for update operation
 					$query = "UPDATE tbl_product SET productName=?, catId=?, brandId=?, body=?, price=?, image=?, type=? WHERE productId=?";
 					$params = [$productName, $catId, $brandId, $body, $price, $uploaded_image, $type, $id];
 					$types = "siisdssi";
@@ -168,14 +170,16 @@ private $fm;
 		}
 	}
 
+	// SECURE: Parameterized deletion with validation
 	public function delProById($id){
-		// Validate ID
+		// SECURE: Validate ID before deletion
 		$id = $this->fm->validatePositiveInt($id);
 		if (!$id) {
 			$msg = "<span class='error'>Invalid product ID!</span>";
 			return $msg;
 		}
 		
+		// SECURE: Safe product retrieval before deletion
 		$query = "SELECT * FROM tbl_product WHERE productId = ?";
 		$getData = $this->db->select($query, [$id], 'i');
 		
@@ -188,6 +192,7 @@ private $fm;
 			}
 		}
 
+		// SECURE: Parameterized deletion
 		$delquery = "DELETE FROM tbl_product WHERE productId = ?";
 		$deldata = $this->db->delete($delquery, [$id], 'i');
 		
