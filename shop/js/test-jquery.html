@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jQuery Security Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-result { 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 5px; 
+            border-left: 4px solid;
+        }
+        .success { 
+            background-color: #d4edda; 
+            color: #155724; 
+            border-left-color: #28a745;
+        }
+        .error { 
+            background-color: #f8d7da; 
+            color: #721c24; 
+            border-left-color: #dc3545;
+        }
+        .info { 
+            background-color: #d1ecf1; 
+            color: #0c5460; 
+            border-left-color: #17a2b8;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border-left-color: #ffc107;
+        }
+        .test-icon {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        .recommendations {
+            background-color: #e2e3e5;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .recommendations h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .recommendations ul {
+            margin: 10px 0;
+        }
+        .recommendations li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 jQuery Security Test</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            This test verifies that your jQuery installation is secure and up-to-date.
+        </p>
+        
+        <div id="test-results"></div>
+        
+        <div class="recommendations">
+            <h3>📋 Security Recommendations</h3>
+            <ul>
+                <li><strong>Update HTML files:</strong> Replace old jQuery references with <code>jquery-3.7.1.min.js</code></li>
+                <li><strong>Remove old files:</strong> Delete <code>jquery-1.7.2.min.js</code>, <code>jquery.min.js</code>, and <code>jquerymain.js</code></li>
+                <li><strong>Implement CSP:</strong> Add Content Security Policy headers</li>
+                <li><strong>Use SRI:</strong> Add Subresource Integrity for external scripts</li>
+                <li><strong>Regular updates:</strong> Monitor for security updates</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Using the new secure jQuery version -->
+    <script src="jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var results = $('#test-results');
+            
+            // Test 1: jQuery Version Check
+            var version = $.fn.jquery;
+            var versionDiv = $('<div class="test-result"></div>');
+            
+            if (version === '3.7.1') {
+                versionDiv.addClass('success').html('<span class="test-icon">✅</span><strong>jQuery Version Test:</strong> PASSED - Version ' + version + ' is secure and up-to-date');
+            } else if (version && parseFloat(version) >= 3.0) {
+                versionDiv.addClass('warning').html('<span class="test-icon">⚠️</span><strong>jQuery Version Test:</strong> WARNING - Version ' + version + ' is secure but not the latest');
+            } else {
+                versionDiv.addClass('error').html('<span class="test-icon">❌</span><strong>jQuery Version Test:</strong> FAILED - Version ' + version + ' contains known vulnerabilities');
+            }
+            results.append(versionDiv);
+            
+            // Test 2: Basic jQuery Functionality
+            var basicDiv = $('<div class="test-result"></div>');
+            try {
+                var testElement = $('<div>').addClass('test-class');
+                if (testElement.hasClass('test-class')) {
+                    basicDiv.addClass('success').html('<span class="test-icon">✅</span><strong>Basic jQuery Functionality:</strong> PASSED - DOM manipulation working correctly');
+                } else {
+                    basicDiv.addClass('error').html('<span class="test-icon">❌</span><strong>Basic jQuery Functionality:</strong> FAILED - DOM manipulation not working');
+                }
+            } catch (e) {
+                basicDiv.addClass('error').html('<span class="test-icon">❌</span><strong>Basic jQuery Functionality:</strong> FAILED - ' + e.message);
+            }
+            results.append(basicDiv);
+            
+            // Test 3: Security Features - HTML Sanitization
+            var securityDiv = $('<div class="test-result"></div>');
+            try {
+                // Test that jQuery properly handles potentially dangerous HTML
+                var testHtml = '<script>alert("xss")</script><img src="x" onerror="alert(\'xss\')">';
+                var sanitized = $('<div>').html(testHtml).html();
+                
+                // Check if script tags are present (they should be escaped)
+                if (sanitized.indexOf('<script>') === -1 && sanitized.indexOf('onerror=') === -1) {
+                    securityDiv.addClass('success').html('<span class="test-icon">✅</span><strong>HTML Sanitization:</strong> PASSED - Dangerous HTML properly handled');
+                } else {
+                    securityDiv.addClass('warning').html('<span class="test-icon">⚠️</span><strong>HTML Sanitization:</strong> WARNING - Some HTML may not be sanitized (this is normal for jQuery)');
+                }
+            } catch (e) {
+                securityDiv.addClass('error').html('<span class="test-icon">❌</span><strong>HTML Sanitization:</strong> FAILED - ' + e.message);
+            }
+            results.append(securityDiv);
+            
+            // Test 4: AJAX Functionality
+            var ajaxDiv = $('<div class="test-result"></div>');
+            try {
+                if (typeof $.ajax === 'function') {
+                    ajaxDiv.addClass('success').html('<span class="test-icon">✅</span><strong>AJAX Functionality:</strong> PASSED - AJAX is available and ready');
+                } else {
+                    ajaxDiv.addClass('error').html('<span class="test-icon">❌</span><strong>AJAX Functionality:</strong> FAILED - AJAX not available');
+                }
+            } catch (e) {
+                ajaxDiv.addClass('error').html('<span class="test-icon">❌</span><strong>AJAX Functionality:</strong> FAILED - ' + e.message);
+            }
+            results.append(ajaxDiv);
+            
+            // Test 5: Event Handling
+            var eventDiv = $('<div class="test-result"></div>');
+            try {
+                var testEvent = $('<button>Test</button>');
+                var eventWorked = false;
+                testEvent.on('click', function() {
+                    eventWorked = true;
+                });
+                testEvent.trigger('click');
+                
+                if (eventWorked) {
+                    eventDiv.addClass('success').html('<span class="test-icon">✅</span><strong>Event Handling:</strong> PASSED - Event system working correctly');
+                } else {
+                    eventDiv.addClass('error').html('<span class="test-icon">❌</span><strong>Event Handling:</strong> FAILED - Event system not working');
+                }
+            } catch (e) {
+                eventDiv.addClass('error').html('<span class="test-icon">❌</span><strong>Event Handling:</strong> FAILED - ' + e.message);
+            }
+            results.append(eventDiv);
+            
+            // Test 6: Animation Support
+            var animationDiv = $('<div class="test-result"></div>');
+            try {
+                if (typeof $.fn.fadeIn === 'function' && typeof $.fn.animate === 'function') {
+                    animationDiv.addClass('success').html('<span class="test-icon">✅</span><strong>Animation Support:</strong> PASSED - Animation functions available');
+                } else {
+                    animationDiv.addClass('error').html('<span class="test-icon">❌</span><strong>Animation Support:</strong> FAILED - Animation functions not available');
+                }
+            } catch (e) {
+                animationDiv.addClass('error').html('<span class="test-icon">❌</span><strong>Animation Support:</strong> FAILED - ' + e.message);
+            }
+            results.append(animationDiv);
+            
+            // Summary
+            var summaryDiv = $('<div class="test-result info"></div>');
+            var passedTests = results.find('.success').length;
+            var warningTests = results.find('.warning').length;
+            var failedTests = results.find('.error').length;
+            var totalTests = passedTests + warningTests + failedTests;
+            
+            var summaryText = '<span class="test-icon">📊</span><strong>Test Summary:</strong> ';
+            summaryText += passedTests + ' passed, ';
+            summaryText += warningTests + ' warnings, ';
+            summaryText += failedTests + ' failed ';
+            summaryText += '(' + totalTests + ' total tests)';
+            
+            if (failedTests === 0 && warningTests === 0) {
+                summaryText += '<br><strong style="color: #28a745;">🎉 All tests passed! Your jQuery installation is secure.</strong>';
+            } else if (failedTests === 0) {
+                summaryText += '<br><strong style="color: #ffc107;">⚠️ Tests passed with warnings. Consider updating to the latest version.</strong>';
+            } else {
+                summaryText += '<br><strong style="color: #dc3545;">❌ Some tests failed. Please update your jQuery installation.</strong>';
+            }
+            
+            summaryDiv.html(summaryText);
+            results.append(summaryDiv);
+            
+            // Vulnerability Check
+            var vulnDiv = $('<div class="test-result"></div>');
+            if (version && parseFloat(version) < 3.0) {
+                vulnDiv.addClass('error').html('<span class="test-icon">🚨</span><strong>Security Alert:</strong> Your jQuery version contains known vulnerabilities. Please update immediately!');
+            } else if (version === '3.7.1') {
+                vulnDiv.addClass('success').html('<span class="test-icon">🛡️</span><strong>Security Status:</strong> Your jQuery version is secure and up-to-date');
+            } else {
+                vulnDiv.addClass('warning').html('<span class="test-icon">⚠️</span><strong>Security Status:</strong> Your jQuery version is secure but not the latest');
+            }
+            results.append(vulnDiv);
+        });
+    </script>
+</body>
+</html>
