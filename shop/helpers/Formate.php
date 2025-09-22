@@ -33,5 +33,26 @@ class Format{
   }
   return $title = ucfirst($title);
  }
+
+  // New security validation methods
+ public function sanitizeNumber($input) {
+  $input = $this->validation($input);
+  return filter_var($input, FILTER_SANITIZE_NUMBER_INT);
+ }
+ 
+ public function validatePositiveInt($input) {
+  return filter_var($input, FILTER_VALIDATE_INT, 
+      array('options' => array('min_range' => 1)));
+ }
+ 
+ public function sanitizeString($input) {
+  $input = $this->validation($input);
+  return filter_var($input, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+ }
+ 
+ public function escapeString($input, $link) {
+  $input = $this->validation($input);
+  return mysqli_real_escape_string($link, $input);
+ }
 }
 ?>
