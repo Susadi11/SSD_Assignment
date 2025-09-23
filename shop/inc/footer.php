@@ -96,3 +96,9 @@
 
 </body>
 </html>
+<?php
+// Flush output buffer started in header to send all content and headers cleanly
+if (function_exists('ob_get_level') && ob_get_level() > 0) {
+    ob_end_flush();
+}
+?>
