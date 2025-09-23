@@ -1,5 +1,7 @@
 <?php
-session_start();
+// Initialize session with secure cookie parameters
+include_once 'lib/Session.php';
+Session::init();
 
 // Security headers to prevent clickjacking attacks
 header("X-Frame-Options: DENY");
@@ -9,7 +11,6 @@ header("Referrer-Policy: strict-origin-when-cross-origin");
 
 include_once 'config/config.php';
 include_once 'config/google_oauth.php';
-include_once 'lib/Session.php';
 include_once 'classess/Customer.php';
 
 $cmr = new Customer();
