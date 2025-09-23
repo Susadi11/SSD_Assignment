@@ -1,4 +1,15 @@
 <?php
+// Security: prevent PHP error details from being shown to users and enable logging
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+if (!ini_get('error_log')) {
+    ini_set('error_log', __DIR__ . '/../php-error.log');
+}
+
+// Start output buffering early so header() calls later in the request work safely
+if (function_exists('ob_get_level') && ob_get_level() === 0) {
+    ob_start();
+}
 
 include 'lib/Session.php';
 Session::init();
