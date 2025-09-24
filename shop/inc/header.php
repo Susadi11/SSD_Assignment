@@ -1,4 +1,15 @@
 <?php
+// Security: prevent PHP error details from being shown to users and enable logging
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+if (!ini_get('error_log')) {
+    ini_set('error_log', __DIR__ . '/../php-error.log');
+}
+
+// Start output buffering early so header() calls later in the request work safely
+if (function_exists('ob_get_level') && ob_get_level() === 0) {
+    ob_start();
+}
 
 include 'lib/Session.php';
 Session::init();
@@ -26,9 +37,21 @@ $cmr = new Customer();
   
   // Security headers to prevent clickjacking attacks
   header("X-Frame-Options: DENY");
-  header("Content-Security-Policy: frame-ancestors 'none'");
   header("X-Content-Type-Options: nosniff");
   header("Referrer-Policy: strict-origin-when-cross-origin");
+  
+  // Fix CSP: style-src unsafe-inline vulnerability
+  $csp = "default-src 'self'; " .
+         "script-src 'self' https://cdnjs.cloudflare.com https://developers.google.com https://apis.google.com; " .
+         "style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; " .
+         "img-src 'self' data: https:; " .
+         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " .
+         "connect-src 'self' https://accounts.google.com; " .
+         "frame-ancestors 'none'; " .
+         "object-src 'none'; " .
+         "base-uri 'self'; " .
+         "form-action 'self';";
+  header("Content-Security-Policy: " . $csp);
 ?>
 
 

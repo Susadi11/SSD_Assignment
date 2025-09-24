@@ -1,6 +1,7 @@
 <?php
-// REMOVE session_start() from here - let csrf.php handle it
-include_once 'inc/csrf.php';  // This will handle session initialization properly
+// Initialize session with secure cookie parameters
+include_once 'lib/Session.php';
+Session::init();
 
 // Security headers to prevent clickjacking attacks
 header("X-Frame-Options: DENY");
@@ -8,9 +9,9 @@ header("Content-Security-Policy: frame-ancestors 'none'");
 header("X-Content-Type-Options: nosniff");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
+include_once 'inc/csrf.php';  // CSRF protection and session regeneration
 include_once 'config/config.php';
 include_once 'config/google_oauth.php';
-include_once 'lib/Session.php';
 include_once 'classess/Customer.php';
 
 $cmr = new Customer();
