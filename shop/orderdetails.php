@@ -1,4 +1,5 @@
 <?php include 'inc/header.php';?>
+<?php include 'inc/csrf.php';?>
 <?php 
 $login = Session::get("cuslogin");
 if ($login == false) {
@@ -6,15 +7,20 @@ if ($login == false) {
 }
  ?>
 
+ <?php 
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_delivery'])) {
+        // ADD CSRF validation
+        if (!csrf_validate('confirm_order', $_POST['csrf_token'] ?? null)) {
+            csrf_fail();
+        }
+        
+        $id = $_POST['customer_id'];
+        $confirm = $ct->productShiftConfirm($id);
+    }
+?>
 
-<?php 
-if (isset($_GET['customerId'])) {
-    $id = $_GET['customerId'];
-    $confirm = $ct->productShiftConfirm($id);
 
-}
 
- ?>
 
  <style>
      .tblone tr td{text-align: justify;}
@@ -75,9 +81,15 @@ if (isset($_GET['customerId'])) {
                 
                     <?php 
                     if ($result['status'] == '1') { ?>
-                     <td> <a href="?customerId=<?php echo $result['id']; ?>">Confirm</a><td>
-                   <?php } elseif($result['status'] == '2'){?>
-                    <td>Ok</td>
+                        <td>
+                            <form action="" method="post" style="display:inline;">
+                                <?php csrf_field('confirm_order'); ?>
+                                <input type="hidden" name="customer_id" value="<?php echo $result['id']; ?>"/>
+                                <button type="submit" name="confirm_delivery" style="background:none;border:none;color:blue;text-decoration:underline;cursor:pointer;">Confirm</button>
+                            </form>
+                        </td>
+                    <?php } elseif($result['status'] == '2'){?>
+                        <td>Ok</td>
 
                   <?php }elseif ($result['status'] == '0') {?>
                       <td>N/A</td>

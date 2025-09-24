@@ -1,4 +1,8 @@
-<?php include 'inc/header.php';?>
+<?php 
+include 'inc/header.php';
+include 'inc/csrf.php';
+?>
+
 
 <?php 
 $login = Session::get("cuslogin");
@@ -10,9 +14,13 @@ if ($login == false) {
 <?php
 $cmrId = Session::get("cmrId");
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
+    // ADD CSRF validation
+    if (!csrf_validate('update_profile', $_POST['csrf_token'] ?? null)) {
+        csrf_fail();
+    }
+    
     $updateCmr = $cmr->customerUpdate($_POST,$cmrId);
 }
-
 ?> 
 
 <style>
@@ -34,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit'])) {
 
     		 ?>
     		 <form action="" method="post">
+				<?php csrf_field('update_profile'); ?>
 				<table class="tblone">
 					<?php 
 					if (isset($updateCmr)) {

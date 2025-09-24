@@ -1,5 +1,6 @@
 <?php
-session_start();
+// REMOVE session_start() from here - let csrf.php handle it
+include_once 'inc/csrf.php';  // This will handle session initialization properly
 
 // Security headers to prevent clickjacking attacks
 header("X-Frame-Options: DENY");
@@ -41,6 +42,9 @@ if (isset($_GET['code'])) {
                     $cmr->updateCustomerGoogleId($existing_user['id'], $google_id, $picture);
                 }
                 
+                // Regenerate session after successful login
+                csrf_regenerate_session();
+                
                 // Set session and redirect
                 Session::set("cuslogin", true);
                 Session::set("cmrId", $existing_user['id']);
@@ -62,6 +66,9 @@ if (isset($_GET['code'])) {
                 if ($result) {
                     // Get the newly created customer
                     $new_customer = $cmr->getCustomerByEmail($email);
+                    
+                    // Regenerate session after successful login
+                    csrf_regenerate_session();
                     
                     // Set session and redirect
                     Session::set("cuslogin", true);
