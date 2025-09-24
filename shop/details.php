@@ -1,4 +1,5 @@
 <?php include 'inc/header.php'; ?>
+<?php include 'inc/csrf.php'; ?>
 
 <?php
 // Require a valid product id
@@ -10,19 +11,14 @@ if (isset($_GET['proid'])) {
     }
 }
 
-// Ensure CSRF token
-if (!isset($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
 $addCart   = null;
 $insertCom = null;
 $saveWlist = null;
 
 // Handle cart add
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
-        die("Invalid CSRF token.");
+    if (!csrf_validate('add_to_cart', $_POST['csrf_token'] ?? null)) {
+        csrf_fail();
     }
 
     $quantity = filter_input(INPUT_POST, 'quantity', FILTER_VALIDATE_INT, [
@@ -38,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
 // Handle compare
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['compare'])) {
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
-        die("Invalid CSRF token.");
+    if (!csrf_validate('add_to_compare', $_POST['csrf_token'] ?? null)) {
+        csrf_fail();
     }
 
     $productId = filter_input(INPUT_POST, 'productId', FILTER_VALIDATE_INT);
@@ -50,8 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['compare'])) {
 
 // Handle wishlist
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wlist'])) {
-    if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'] ?? '')) {
-        die("Invalid CSRF token.");
+    if (!csrf_validate('add_to_wishlist', $_POST['csrf_token'] ?? null)) {
+        csrf_fail();
     }
 
     if ($id) {
@@ -85,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wlist'])) {
                     </div>
                     <div class="add-cart">
                         <form method="post">
-                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                            <?php csrf_field('add_to_cart'); ?>
                             <input type="number" class="buyfield" name="quantity" value="1" min="1" max="20" />
                             <input type="submit" class="buysubmit" name="submit" value="Buy Now"/>
                         </form>                
@@ -106,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wlist'])) {
                     <div class="add-cart">
                         <div class="mybutton">
                             <form method="post">
-                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                                <?php csrf_field('add_to_compare'); ?>
                                 <input type="hidden" name="productId" value="<?php echo (int)$result['productId']; ?>"/>
                                 <input type="submit" class="buysubmit" name="compare" value="Add to Compare"/>
                             </form>    
@@ -114,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['wlist'])) {
 
                         <div class="mybutton">
                             <form method="post">
-                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+                                <?php csrf_field('add_to_wishlist'); ?>
                                 <input type="submit" class="buysubmit" name="wlist" value="Save to List"/>
                             </form>    
                         </div>        

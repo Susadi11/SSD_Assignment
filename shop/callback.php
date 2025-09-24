@@ -9,6 +9,7 @@ header("Content-Security-Policy: frame-ancestors 'none'");
 header("X-Content-Type-Options: nosniff");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 
+include_once 'inc/csrf.php';  // CSRF protection and session regeneration
 include_once 'config/config.php';
 include_once 'config/google_oauth.php';
 include_once 'classess/Customer.php';
@@ -42,6 +43,9 @@ if (isset($_GET['code'])) {
                     $cmr->updateCustomerGoogleId($existing_user['id'], $google_id, $picture);
                 }
                 
+                // Regenerate session after successful login
+                csrf_regenerate_session();
+                
                 // Set session and redirect
                 Session::set("cuslogin", true);
                 Session::set("cmrId", $existing_user['id']);
@@ -63,6 +67,9 @@ if (isset($_GET['code'])) {
                 if ($result) {
                     // Get the newly created customer
                     $new_customer = $cmr->getCustomerByEmail($email);
+                    
+                    // Regenerate session after successful login
+                    csrf_regenerate_session();
                     
                     // Set session and redirect
                     Session::set("cuslogin", true);

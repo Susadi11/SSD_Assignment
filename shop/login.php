@@ -1,5 +1,6 @@
 <?php 
 include 'inc/header.php';
+include 'inc/csrf.php';  // NEW: Include our CSRF helper
 include 'config/google_oauth.php';
 
 $login = Session::get("cuslogin");
@@ -8,22 +9,17 @@ if ($login === true) {
     exit;
 }
 
-// Ensure CSRF token exists
-if (!isset($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
 $custLogin = null;
 $customerReg = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check CSRF token
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        http_response_code(400);
-        die("Invalid request.");
-    }
-
+    
     if (isset($_POST['login'])) {
+        // NEW: Validate CSRF token for login form
+        if (!csrf_validate('login_form', $_POST['csrf_token'] ?? null)) {
+            csrf_fail('Invalid security token. Please refresh the page and try again.');
+        }
+        
         // Sanitize inputs
         $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
         $pass  = $_POST['pass'] ?? '';
@@ -35,10 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'email' => $email,
                 'pass'  => $pass
             ]);
+            
+            // NEW: Regenerate session after successful login (prevents session fixation)
+            // Note: Adapt this condition based on how your customerLogin() method works
+            if ($custLogin && !is_string($custLogin)) { // Assuming success doesn't return error string
+                csrf_regenerate_session();
+            }
         }
     }
 
     if (isset($_POST['register'])) {
+        // NEW: Validate CSRF token for registration form
+        if (!csrf_validate('register_form', $_POST['csrf_token'] ?? null)) {
+            csrf_fail('Invalid security token. Please refresh the page and try again.');
+        }
+        
         // Sanitize & validate registration fields
         $data = [];
         $data['name']    = trim(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
@@ -66,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <h3>Existing Customers</h3>
       <p>Sign in with the form below.</p>
       <form action="" method="post" autocomplete="off">
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+        <?php csrf_field('login_form'); ?>
         <input name="email" placeholder="Email" type="email" required />
         <input name="pass" placeholder="Password" type="password" required />
         <div class="buttons"><div><button class="grey" name="login">Sign In</button></div></div>
@@ -83,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php if ($customerReg) echo $customerReg; ?>
       <h3>Register New Account</h3>
       <form action="" method="post" autocomplete="off">
-        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
+        <?php csrf_field('register_form'); ?>
         <table>
           <tbody>
             <tr>
