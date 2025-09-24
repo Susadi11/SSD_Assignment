@@ -37,9 +37,21 @@ $cmr = new Customer();
   
   // Security headers to prevent clickjacking attacks
   header("X-Frame-Options: DENY");
-  header("Content-Security-Policy: frame-ancestors 'none'");
   header("X-Content-Type-Options: nosniff");
   header("Referrer-Policy: strict-origin-when-cross-origin");
+  
+  // Fix CSP: style-src unsafe-inline vulnerability
+  $csp = "default-src 'self'; " .
+         "script-src 'self' https://cdnjs.cloudflare.com https://developers.google.com https://apis.google.com; " .
+         "style-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com; " .
+         "img-src 'self' data: https:; " .
+         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " .
+         "connect-src 'self' https://accounts.google.com; " .
+         "frame-ancestors 'none'; " .
+         "object-src 'none'; " .
+         "base-uri 'self'; " .
+         "form-action 'self';";
+  header("Content-Security-Policy: " . $csp);
 ?>
 
 
